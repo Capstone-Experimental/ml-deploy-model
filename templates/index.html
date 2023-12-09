@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentiment Analysis</title>
+</head>
+<style>
+    body {
+        text-align: center;
+    }
+
+    button {
+        color: aliceblue;
+        background-color: blue;
+    }
+</style>
+<body>
+    <h1>Sentiment Classifier</h1>
+    <div>
+        <form method="POST">
+            <textarea rows="12" cols="60" name="text-content" placeholder="Enter your Text here"
+            value="{{ text }}">{{ text }}</textarea>
+            <div>
+                <button type="submit">Submit</button>
+            </div>
+        </form>
+    </div>
+    <div>
+        <p id="display">{{ text }}</p>
+    </div>
+</body>
+</html>
