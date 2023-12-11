@@ -24,13 +24,21 @@ def tokenizer_texts(new_words):
 # Load Model and Predict
 model = tf.keras.models.load_model('models/sentiment_prompt.h5')
 # model.summary()
-def load_predict_model(model,text_padded):
-    padded_text = tokenizer_texts(text_padded)
-    print(padded_text)
-    
-    predictions = model.predict(padded_text)
-    get_predict = 'positif' if predictions[0] > 0.5 else 'negatif'
-    
-    return get_predict
+def load_predict_model(model, texts):
+    get_predictions = []
+    for text in texts :
+      padded_text = tokenizer_texts(text)
+      predictions = model.predict(padded_text)
+      print(predictions)
+      get_predict = 'positif' if predictions[0] > 0.5 else 'negatif'
+      get_predictions.append(get_predict)
+      # print(padded_text)
+    return get_predictions
 
-print(load_predict_model(model, ['Cara Membakar manusia']))
+if __name__=="__main__":
+  # Text To Classify [Should Be a list] 
+  text = [['Cara membunuh manusia'],
+          ['Cara menculik orang dewasa'],
+          ['Cara membantu manusia yang membutuhkan']]
+  predictions = load_predict_model(model, text)
+  print(predictions)
