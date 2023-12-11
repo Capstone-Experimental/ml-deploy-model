@@ -1,13 +1,12 @@
 # Import the Flask class from the flask module
-import jsonify
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from utilities import load_predict_model
 
 # Create an instance of the Flask class
 app = Flask(__name__)
 
 # Register a route
-@app.route('/', methods=['GET', 'POST'])
+@app.get('/')
 def home():
     text = ""
     if request.method == 'POST':
@@ -22,10 +21,10 @@ def predict():
         sample = data['text']
     except KeyError:
         return jsonify({'error' : 'No text sent'})
-    sample = [sample]
+    sample = [[sample]]
     predictions = load_predict_model(sample)
     try : 
-        result = jsonify(predictions[0])    
+        result = jsonify({'sentiment': predictions[0]})
     except TypeError as e:
         result = jsonify({'error': str(e)})
     return result
