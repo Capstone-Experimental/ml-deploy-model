@@ -1,5 +1,8 @@
 # Import the Flask class from the flask module
-from flask import Flask, render_template, request, jsonify
+import os
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+
+from flask import Flask, request, jsonify
 from threading import Thread
 from utilities import load_predict_model
 import csv
@@ -15,19 +18,19 @@ def log_to_csv(sample, sentiment):
         writer.writerow({'text': sample[0], 'sentiment': class_sentiment[sentiment] })
 
 # Register a route
-@app.get('/')
-def home():
-    text = ""
-    if request.method == 'POST':
-        text = request.form.get('text-content')
-    return render_template("index.html", text=text)
+# @app.get('/')
+# def home():
+#     text = ""
+#     if request.method == 'POST':
+#         text = request.form.get('text-content')
+#     return render_template("index.html", text=text)
 
 # Predict Texts Sentiment
-@app.post('/predict')
+@app.post('api/sentiment')
 def predict():
     data = request.json
     try :
-        sample = data['text']
+        sample = data['prompt']
     except KeyError:
         return jsonify({'error' : 'No text sent'})
     sample = [[sample]]
@@ -39,8 +42,8 @@ def predict():
     try : 
         result = jsonify({'sentiment': predicted_sentiment})
         # Start a thread for logging in the background
-        thread = Thread(target=log_to_csv, args=(sample[0], predicted_sentiment))
-        thread.start()
+        # thread = Thread(target=log_to_csv, args=(sample[0], predicted_sentiment))
+        # thread.start()
     except TypeError as e:
         result = jsonify({'error': str(e)})
 
@@ -48,4 +51,4 @@ def predict():
 
 # Run the Flask application
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
+    app.run(host='0.0.0.0', debug=True, port=8080)
