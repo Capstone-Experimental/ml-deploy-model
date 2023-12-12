@@ -32,7 +32,7 @@ def predict():
     try :
         sample = data['prompt']
     except KeyError:
-        return jsonify({'error' : 'No text sent'})
+        return jsonify({'error' : 'No text sent hehe'})
     sample = [[sample]]
 
     # Make Prediction
