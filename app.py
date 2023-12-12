@@ -26,7 +26,7 @@ def log_to_csv(sample, sentiment):
 #     return render_template("index.html", text=text)
 
 # Predict Texts Sentiment
-@app.post('api/sentiment')
+@app.post('/api/sentiment')
 def predict():
     data = request.json
     try :
