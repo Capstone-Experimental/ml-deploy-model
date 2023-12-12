@@ -1,7 +1,16 @@
+import os
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
+
 import tensorflow as tf
 from keras.preprocessing.sequence import pad_sequences
 import pickle
 
+import logging
+import tensorflow as tf
+
+# Set TensorFlow log level
+tf.get_logger().setLevel(logging.ERROR)
 
 # Load Pickle Tokenizer
 with open('models/tokenizer.pickle', 'rb') as f:

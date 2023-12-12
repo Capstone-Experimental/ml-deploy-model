@@ -1,6 +1,15 @@
+import os
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+
 import tensorflow as tf
 import pandas as pd
 from keras.preprocessing.text import Tokenizer
+
+import logging
+import tensorflow as tf
+
+# Set TensorFlow log level
+tf.get_logger().setLevel(logging.ERROR)
 
 
 dataset = pd.read_csv('dataset/data_sentimenv2.csv')
