@@ -1,4 +1,18 @@
 steps:
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        gcloud secrets versions access latest --secret="env-ml-sentiment" --project="sonic-anagram-397306" --format='get(payload.data)' | base64 -d > .env
+  
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        gcloud secrets versions access latest --secret="firebase-credentials" --project="sonic-anagram-397306" --format='get(payload.data)' | base64 -d > deployment/cred.json
+
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', 'gcr.io/sonic-anagram-397306/sentiment_analysis', '-f', 'Dockerfile.prod', '.']
 

@@ -1,31 +1,22 @@
 # Import the Flask class from the flask module
 import os
-os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 from flask import Flask, request, jsonify
 from threading import Thread
 from utilities import load_predict_model
-import csv
+from gcs import append_data_to_csv_in_gcs
+from dotenv import load_dotenv
 
-# Create an instance of the Flask class
+
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+load_dotenv()
+
 app = Flask(__name__)
 
-# Save new data
-def log_to_csv(sample, sentiment):
-    class_sentiment = {'positif' : 1, 'negatif':0}
-    with open('dataset/data_sentiment_train.csv', 'a', newline='') as file:
-        writer = csv.DictWriter(file, fieldnames=['text', 'sentiment'])
-        writer.writerow({'text': sample[0], 'sentiment': class_sentiment[sentiment] })
+@app.get('/api/trigger')
+def test():
+    return jsonify({"message" : "trigger"})
 
-# Register a route
-# @app.get('/')
-# def home():
-#     text = ""
-#     if request.method == 'POST':
-#         text = request.form.get('text-content')
-#     return render_template("index.html", text=text)
-
-# Predict Texts Sentiment
 @app.post('/api/sentiment')
 def predict():
     data = request.json
@@ -35,20 +26,23 @@ def predict():
         return jsonify({'error' : 'No text sent hehe'})
     sample = [[sample]]
 
-    # Make Prediction
     predictions = load_predict_model(sample)
+    str_sample = str(sample[0]).replace("'", "").replace("[", "").replace("]", "")
     predicted_sentiment = predictions[0]
-
+    class_sentiment = {'positif' : 1, 'negatif':0}
     try : 
+    
+        append_data_to_csv_in_gcs(
+            os.getenv('BUCKET_NAME'),
+            os.getenv('BUCKET_PATH'),
+            prompt=str_sample,
+            sentiment=class_sentiment[predicted_sentiment]
+        ) 
         result = jsonify({'sentiment': predicted_sentiment})
-        # Start a thread for logging in the background
-        # thread = Thread(target=log_to_csv, args=(sample[0], predicted_sentiment))
-        # thread.start()
     except TypeError as e:
         result = jsonify({'error': str(e)})
 
     return result
 
-# Run the Flask application
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True, port=8080)
