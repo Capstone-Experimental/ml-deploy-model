@@ -31,13 +31,12 @@ def predict():
     predicted_sentiment = predictions[0]
     class_sentiment = {'positif' : 1, 'negatif':0}
     try : 
-    
-        append_data_to_csv_in_gcs(
-            os.getenv('BUCKET_NAME'),
-            os.getenv('BUCKET_PATH'),
-            prompt=str_sample,
-            sentiment=class_sentiment[predicted_sentiment]
-        ) 
+        # append_data_to_csv_in_gcs(
+        #     os.getenv('BUCKET_NAME'),
+        #     os.getenv('BUCKET_PATH'),
+        #     prompt=str_sample,
+        #     sentiment=class_sentiment[predicted_sentiment]
+        # ) 
         result = jsonify({'sentiment': predicted_sentiment})
     except TypeError as e:
         result = jsonify({'error': str(e)})
