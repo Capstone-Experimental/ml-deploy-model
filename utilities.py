@@ -1,11 +1,14 @@
 import tensorflow as tf
+import tensorflow_hub as hub
 from keras.preprocessing.sequence import pad_sequences
+from keras.utils import custom_object_scope
 import pickle
 
 
 # Load Pickle Tokenizer
 with open('models/tokenizer.pickle', 'rb') as f:
    tokenizer = pickle.load(f)
+
 # Pre-processing Text and Tokenizer
 max_length= 50
 def tokenizer_texts(new_words):
@@ -23,6 +26,7 @@ def tokenizer_texts(new_words):
 
 # Load Model and Predict
 model = tf.keras.models.load_model('models/sentiment_prompt.h5')
+
 # model.summary()
 def load_predict_model(texts):
     get_predictions = []
@@ -35,10 +39,13 @@ def load_predict_model(texts):
       # print(padded_text)
     return get_predictions
 
-# if __name__=="__main__":
-  # Text To Classify [Should Be a list] 
-  # text = [['Cara membunuh manusia'],
-  #         ['Cara menculik orang dewasa'],
-  #         ['Cara membantu manusia yang membutuhkan']]
-  # predictions = load_predict_model(model, text)
-  # print(predictions)
+# Pre Train Model
+model_path = 'models/pretrain_sentiment.keras'  # Check if this path is correct
+def load_predict_model_pretrain(texts):
+    model_pretrain = tf.keras.models.load_model(model_path, custom_objects={'KerasLayer': hub.KerasLayer})
+    predictions = model_pretrain.predict(texts)
+    return predictions
+
+text = [['Cara membunuh manusia']]
+predictions = load_predict_model_pretrain(text)
+print(predictions)
