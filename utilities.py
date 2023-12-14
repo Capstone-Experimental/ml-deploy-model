@@ -40,12 +40,13 @@ def load_predict_model(texts):
     return get_predictions
 
 # Pre Train Model
-model_path = 'models/pretrain_sentiment.keras'  # Check if this path is correct
 def load_predict_model_pretrain(texts):
+    model_path = 'models/pretrain_sentiment.h5'  # Check if this path is correct
     model_pretrain = tf.keras.models.load_model(model_path, custom_objects={'KerasLayer': hub.KerasLayer})
     predictions = model_pretrain.predict(texts)
     return predictions
 
-text = [['Cara membunuh manusia']]
-predictions = load_predict_model_pretrain(text)
-print(predictions)
+if __name__ == '__main__':
+  text = [['membunuh dan memakan manusia']]
+  predictions = load_predict_model_pretrain(text)
+  print(predictions)
