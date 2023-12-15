@@ -4,6 +4,7 @@ from keras.preprocessing.sequence import pad_sequences
 from keras.models import load_model
 from keras.utils import custom_object_scope
 from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.pipeline import Pipeline
 import pickle
 
 
@@ -76,36 +77,21 @@ class TokenizerTransformer(BaseEstimator, TransformerMixin):
             sequences, maxlen=self.max_length, padding='post', truncating='post'
         )
         return padded_sequences
-# Fungsi transformer untuk melakukan prediksi dengan model yang sudah dilatih
-class TrainedModelPredictor(BaseEstimator, TransformerMixin):
-    def __init__(self, model):
-        self.model = model
-
-    def fit(self, X, y=None):
-        return self
-
-    def predict(self, X):
-        # Lakukan Prediksi
-        predictions = self.model.predict(X)
-        labels = []
-        for pred in predictions:
-           label = 'positif' if pred > 0.5 else 'negatif'
-           labels.append(label)
-        return labels
 # Load Models
 def load_predict_model_pipeline(texts):
     file_path = 'models/pipeline_sentiment.pickle'
+    loaded_model = load_model('models/sentimentv2_model.h5')
     print("Attempting to load from:", file_path)  # Debug print
     try:
-        with open(file_path, 'rb') as f:
-            loaded_pipeline = pickle.load(f)
-        print("Pipeline loaded successfully.")  # Debug print
-        predicts = loaded_pipeline.predict(texts)
+        pipeline_sentiment = Pipeline([
+            ('tokenizer', TokenizerTransformer(tokenizer, max_length)),
+            ('prediction', loaded_model)
+        ])
+        predicts = pipeline_sentiment.predict(texts)
         return predicts
     except Exception as e:
         print("Error during loading:", e)  # Debug print
         return None  # Return None or handle the error accordingly
-
 
 if __name__ == '__main__':
   text = ['belajar bahasa inggris yang baik']
