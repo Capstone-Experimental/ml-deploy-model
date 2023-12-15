@@ -1,7 +1,9 @@
 import tensorflow as tf
 import tensorflow_hub as hub
 from keras.preprocessing.sequence import pad_sequences
+from keras.models import load_model
 from keras.utils import custom_object_scope
+from sklearn.base import BaseEstimator, TransformerMixin
 import pickle
 
 
@@ -43,10 +45,69 @@ def load_predict_model(texts):
 def load_predict_model_pretrain(texts):
     model_path = 'models/pretrain_sentiment.h5'  # Check if this path is correct
     model_pretrain = tf.keras.models.load_model(model_path, custom_objects={'KerasLayer': hub.KerasLayer})
-    predictions = model_pretrain.predict(texts)
-    return predictions
+    get_predictions = []
+    for text in texts :
+      predictions = model_pretrain.predict(text)
+      print(predictions)
+      get_predict = 'positif' if predictions[0] > 0.5 else 'negatif'
+      get_predictions.append(get_predict)
+      # print(padded_text)
+    return get_predictions
+
+# Pipeline Model
+# Fungsi untuk melakukan tokenisasi menggunakan TensorFlow Tokenizer
+class TokenizerTransformer(BaseEstimator, TransformerMixin):
+    def __init__(self, tokenizer, max_length):
+        self.tokenizer = tokenizer
+        self.max_length = max_length
+
+    def fit(self, X, y=None):
+        # Tidak melakukan fit ulang pada tokenizer
+        return self
+
+    def transform(self, X):
+        texts = []
+        for text in X :
+          new_text = text.lower()  # Ubah ke lowercase
+          # new_text = re.sub(r'[^a-zA-Z0-9\s]', '', new_text)  # Hapus karakter khusus
+          texts.append(new_text)
+        sequences = self.tokenizer.texts_to_sequences(texts)
+        padded_sequences = tf.keras.preprocessing.sequence.pad_sequences(
+            sequences, maxlen=self.max_length, padding='post', truncating='post'
+        )
+        return padded_sequences
+# Fungsi transformer untuk melakukan prediksi dengan model yang sudah dilatih
+class TrainedModelPredictor(BaseEstimator, TransformerMixin):
+    def __init__(self, model):
+        self.model = model
+
+    def fit(self, X, y=None):
+        return self
+
+    def predict(self, X):
+        # Lakukan Prediksi
+        predictions = self.model.predict(X)
+        labels = []
+        for pred in predictions:
+           label = 'positif' if pred > 0.5 else 'negatif'
+           labels.append(label)
+        return labels
+# Load Models
+def load_predict_model_pipeline(texts):
+    file_path = 'models/pipeline_sentiment.pickle'
+    print("Attempting to load from:", file_path)  # Debug print
+    try:
+        with open(file_path, 'rb') as f:
+            loaded_pipeline = pickle.load(f)
+        print("Pipeline loaded successfully.")  # Debug print
+        predicts = loaded_pipeline.predict(texts)
+        return predicts
+    except Exception as e:
+        print("Error during loading:", e)  # Debug print
+        return None  # Return None or handle the error accordingly
+
 
 if __name__ == '__main__':
-  text = [['membunuh dan memakan manusia']]
-  predictions = load_predict_model_pretrain(text)
+  text = ['belajar bahasa inggris yang baik']
+  predictions = load_predict_model_pipeline(text)
   print(predictions)
