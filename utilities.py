@@ -2,7 +2,7 @@ import tensorflow as tf
 import tensorflow_hub as hub
 from keras.preprocessing.sequence import pad_sequences
 from keras.models import load_model
-from keras.utils import custom_object_scope
+# from keras.utils import custom_object_scope
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline
 import pickle
@@ -27,33 +27,33 @@ def tokenizer_texts(new_words):
   )
   return new_padded
 
-# Load Model and Predict
-model = tf.keras.models.load_model('models/sentiment_prompt.h5')
+# # Load Model and Predict
+# model = tf.keras.models.load_model('models/sentiment_prompt.h5')
 
-# model.summary()
-def load_predict_model(texts):
-    get_predictions = []
-    for text in texts :
-      padded_text = tokenizer_texts(text)
-      predictions = model.predict(padded_text)
-      print(predictions)
-      get_predict = 'positif' if predictions[0] > 0.5 else 'negatif'
-      get_predictions.append(get_predict)
-      # print(padded_text)
-    return get_predictions
+# # model.summary()
+# def load_predict_model(texts):
+#     get_predictions = []
+#     for text in texts :
+#       padded_text = tokenizer_texts(text)
+#       predictions = model.predict(padded_text)
+#       print(predictions)
+#       get_predict = 'positif' if predictions[0] > 0.5 else 'negatif'
+#       get_predictions.append(get_predict)
+#       # print(padded_text)
+#     return get_predictions
 
-# Pre Train Model
-def load_predict_model_pretrain(texts):
-    model_path = 'models/pretrain_sentiment.h5'  # Check if this path is correct
-    model_pretrain = tf.keras.models.load_model(model_path, custom_objects={'KerasLayer': hub.KerasLayer})
-    get_predictions = []
-    for text in texts :
-      predictions = model_pretrain.predict(text)
-      print(predictions)
-      get_predict = 'positif' if predictions[0] > 0.5 else 'negatif'
-      get_predictions.append(get_predict)
-      # print(padded_text)
-    return get_predictions
+# # Pre Train Model
+# def load_predict_model_pretrain(texts):
+#     model_path = 'models/pretrain_sentiment.h5'  # Check if this path is correct
+#     model_pretrain = tf.keras.models.load_model(model_path, custom_objects={'KerasLayer': hub.KerasLayer})
+#     get_predictions = []
+#     for text in texts :
+#       predictions = model_pretrain.predict(text)
+#       print(predictions)
+#       get_predict = 'positif' if predictions[0] > 0.5 else 'negatif'
+#       get_predictions.append(get_predict)
+#       # print(padded_text)
+#     return get_predictions
 
 # Pipeline Model
 # Fungsi untuk melakukan tokenisasi menggunakan TensorFlow Tokenizer
@@ -88,7 +88,8 @@ def load_predict_model_pipeline(texts):
             ('prediction', loaded_model)
         ])
         predicts = pipeline_sentiment.predict(texts)
-        return predicts
+        get_predict = 'positif' if predicts[0] > 0.6 else 'negatif'
+        return get_predict
     except Exception as e:
         print("Error during loading:", e)  # Debug print
         return None  # Return None or handle the error accordingly

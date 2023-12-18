@@ -1,7 +1,7 @@
 # Import the Flask class from the flask module
 from flask import Flask, render_template, request, jsonify
 from threading import Thread
-from utilities import load_predict_model,load_predict_model_pretrain
+from utilities import load_predict_model,load_predict_model_pretrain,load_predict_model_pipeline
 import csv
 
 # Create an instance of the Flask class
@@ -33,7 +33,7 @@ def predict():
     sample = [[sample]]
     
     # Make Prediction
-    predictions = load_predict_model_pretrain(sample)
+    predictions = load_predict_model_pipeline(sample)
     predicted_sentiment = predictions[0]
 
     try : 
