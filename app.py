@@ -31,7 +31,7 @@ def predict():
     except KeyError:
         return jsonify({'error' : 'No text sent'})
     sample = [[sample]]
-
+    
     # Make Prediction
     predictions = load_predict_model_pretrain(sample)
     predicted_sentiment = predictions[0]
