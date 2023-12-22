@@ -7,8 +7,9 @@ This guide provides step-by-step instructions on how to run this models in your 
 
 Make sure you have the following installed:
 
-- Python (version 3.10.12)
+- Python (version 3.10.12) 
 - Pip (Python package installer)
+- Anaconda or Miniconda (for managing Python environments) : [Anaconda Docs](https://docs.anaconda.com/free/anaconda/install/)
 
 ## Step 1: Clone the Repository
 
